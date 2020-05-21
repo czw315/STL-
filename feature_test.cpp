@@ -77,11 +77,80 @@ namespace FUNC_TEMP_PARTIAL_ORDER{
     }
 }
 
+namespace MEMBER_TEMPLATE{
+    class alloc{
+    };
+    template <typename T, typename Alloc = alloc>
+    class vector{
+    public:
+        typedef T value_type;
+        typedef value_type *iterator;
+        template<typename I>
+        void insert(iterator pos, I first, I last){
+            cout << "insert()" << endl;
+        }
+    };
 
+    void mainfunc(){
+        int ia[] = {1, 2, 3, 4};
+        vector<int> ivec;
+        vector<int>::iterator itor;
+        ivec.insert(itor, ia, ia + 3);
+    }
+}
+
+/**
+ * 测试模板参数的默认值，以及是否可以用模板参数作为参数，以及非类型模板参数
+ * 友元模板测试
+ */
+namespace LIMITED_DEFAULT_TEMPLATE{
+#include<cstddef>
+    class alloc{
+    };
+    template<typename T, typename Alloc = alloc, size_t BufSiz = 0>
+    class deque{
+    public:
+        deque() { cout << "deque" << endl; }
+    };
+
+    template <typename T, typename Seq>
+    class stack;
+
+    template <typename T, typename Seq>
+    bool operator==(const stack<T,Seq> &, const stack<T,Seq> &);
+
+    template<typename T, typename Sequence=deque<T>>
+    class stack{
+        //friend bool operator==<>(const stack &, const stack &);
+        friend bool operator==<T>(const stack &, const stack &);
+        friend bool operator==<T>(const stack<T> &, const stack<T> &);
+        //!friend bool operator==(const stack &, const stack &);
+    public:
+        stack() { cout << "stack" << endl; }
+    private:
+        Sequence seq;
+    };
+
+    void mainfunc(){
+        stack<int> s;
+    }
+}
+
+class T{
+public:
+    static int get_si(){
+        return si;
+    }
+private:
+    static const int si = 8;
+};
 
 int main(){
     STATIC_TEMPLATE_MEMBER::mainfunc();
     CLASS_PARTIAL_SPECIALIZATION::mainfunc();
     FUNC_TEMP_PARTIAL_ORDER::mainfunc();
+    MEMBER_TEMPLATE::mainfunc();
+    LIMITED_DEFAULT_TEMPLATE::mainfunc();
+    cout << T::get_si() << endl;
     return 0;
 }
